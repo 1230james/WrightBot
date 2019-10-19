@@ -1,13 +1,13 @@
 // Help
 
 // Libraries
-const DiscFunc = require(__dirname + "/../../!CommonScripts/DiscFunctions.js");
-const DBFunc = require(__dirname + "/../../!CommonScripts/DatabaseFunctions.js");
+const DiscFunc = require(__dirname + "/../../CommonScripts/DiscFunctions.js");
+const DBFunc = require(__dirname + "/../../CommonScripts/DatabaseFunctions.js");
 
 // ============================================================================
 
 exports.main = function(message) {
-	let CMDS = `__**WrightBot v18**__
+    let CMDS = `__**WrightBot v18**__
 • bing bong we still working on it
 
 __**COMMANDS**__
@@ -29,16 +29,16 @@ __**CONFIGURABLES**__
 *Note that these commands can only be used by the server owner.*
 1. !vulgar - Toggles vulgar language for sentences between "true" and "false" on a **per text channel** basis. Set to false by default.`
 
-	let EULA = `__**EULA**__
+    let EULA = `__**EULA**__
 James, the bot author, has, to the best of his ability, complied with the Discord API Terms of Service. Due to the nature of WrightBot's code, **responsibility for ensuring that all users of WrightBot give WrightBot permission to collect any and all "End User Data" (as detailed in the Discord API ToS, found here: https://discordapp.com/developers/docs/legal#2-license-accounts-and-restrictions ) rests on the owners and other administrative figures in which WrightBot is used.** James is not responsible for any breach of the Discord API Terms of Service caused by the negligence of the owners and other administrative figures in servers in which WrightBot is used. By using WrightBot in your server, you accept the EULA outlined here.
 
 __**OFFICIAL SUPPORT SERVER**__
 Need some help? Come on down to JSJ; we have a section reserved for anything related to WrightBot, or our other bots PilotBot and The Donald!
 https://discord.gg/MvEHdmc`
 
-	if (message.channel.type != 'dm') {
-		DiscFunc.sendMessage(message,message.author + ', I sent a copy of the Court Record to you in a DM.', null);
-	}
-	DiscFunc.sendDM(message,CMDS,'Sent commands');
-	DiscFunc.sendDM(message,EULA);
+    if (message.channel.type != 'dm') {
+	DiscFunc.sendMessage(message,message.author + ', I sent a copy of the Court Record to you in a DM.', null);
+    }
+    DiscFunc.sendDM(message,CMDS,'Sent commands');
+    DiscFunc.sendDM(message,EULA);
 }
