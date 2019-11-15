@@ -18,6 +18,8 @@ const DBFunc = require(__dirname + "/../CommonScripts/DatabaseFunctions.js");
 
 const Help = require(__dirname + "/Scripts/Help.js");
 const ConfigScript = require(__dirname + "/Scripts/Config.js");
+const Gavel = require(__dirname + "/Scripts/Gavel.js");
+const Judge = require(__dirname + "/Scripts/Judge.js");
 
 // Files
 var database = require(__dirname + "/database.json");
@@ -93,6 +95,25 @@ bot.on("message", function(message) {
     if (input.startsWith(prefix + "CONFIG")) {
         database = ConfigScript.main(message,input,database,bot);
         DBFunc.writeData(__dirname + "/database.json", JSON.stringify(database,null,4));
+    }
+    
+    // gavel - Gavel pound GIF
+    if (input.startsWith(prefix + "GAVEL")) {
+        switch(input) {
+            case prefix + "GAVEL 1":
+                Gavel.main(message,1);
+                break;
+            case prefix + "GAVEL 3":
+                Gavel.main(message,3);
+                break;
+            default:
+                Gavel.main(message,null,prefix);
+        }
+    }
+    
+    // judge - Judge someone guilty or not guilty
+    if (input.startsWith(prefix + "JUDGE")) {
+        Judge.main(message, prefix);
     }
     
 });
