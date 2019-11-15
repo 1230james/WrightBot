@@ -37,7 +37,7 @@ Need some help? Come on down to JSJ; we have a section reserved for anything rel
 https://discord.gg/MvEHdmc`
 
     if (message.channel.type != 'dm') {
-	DiscFunc.sendMessage(message,message.author + ', I sent a copy of the Court Record to you in a DM.', null);
+    DiscFunc.sendMessage(message,message.author + ', I sent a copy of the Court Record to you in a DM.', null);
     }
     DiscFunc.sendDM(message,CMDS,'Sent commands');
     DiscFunc.sendDM(message,EULA);
