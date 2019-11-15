@@ -26,9 +26,9 @@ var databaseBackup = require(__dirname + "/database-backup.json");
 // Misc. Functions
 function createDatabaseInfo(guild) { // Create new guild info in the database
     let guildInfo = {
-	nsfw: false,
-	prefix: defaultPrefix,
-	announceChannel: null
+        nsfw: false,
+        prefix: defaultPrefix,
+        announceChannel: null
     }
     database[guild.id] = guildInfo;
 }
@@ -74,8 +74,8 @@ bot.on("message", function(message) {
     
     // Passive stuff
     if (!(database[message.guild.id])) {
-	createDatabaseInfo(message.guild);
-	DBFunc.writeData(__dirname + "/database.json", JSON.stringify(database,null,4));
+        createDatabaseInfo(message.guild);
+        DBFunc.writeData(__dirname + "/database.json", JSON.stringify(database,null,4));
     }
     
     // One-time vars
@@ -86,13 +86,13 @@ bot.on("message", function(message) {
 
     // help or cmds - Shows commands and info
     if ((input == defaultPrefix + "HELP") || (input == defaultPrefix + "CMDS") || (input == prefix + "HELP") || (input == prefix + "CMDS")) {
-	Help.main(message);
+        Help.main(message);
     }
     
     // config - Let server admins configure the bot
     if (input.startsWith(prefix + "CONFIG")) {
-	database = ConfigScript.main(message,input,database,bot);
-	DBFunc.writeData(__dirname + "/database.json", JSON.stringify(database,null,4));
+        database = ConfigScript.main(message,input,database,bot);
+        DBFunc.writeData(__dirname + "/database.json", JSON.stringify(database,null,4));
     }
     
 });

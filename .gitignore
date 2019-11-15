@@ -1,5 +1,5 @@
 # Bot Config
-*config.json
+**/config.json
 
 # Temp Files
-*.*~
+**/*~
