@@ -3,3 +3,6 @@
 
 # Temp Files
 **/*~
+
+# npm modules
+node_modules/*
