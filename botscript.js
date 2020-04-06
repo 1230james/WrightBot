@@ -1,30 +1,36 @@
-// WrightBot
+// WrightBot by James "1230james" Hyun
+"use strict";
 
-// Important Variables
-const defaultPrefix = "!";
+// Libraries & Important Variables
+const config = require("./config.json");
 
-// Libraries
-var Discord = require("discord.js");
-var bot = new Discord.Client();
-var moment = require("moment");
-var config = require("./config.json");
-var log = (msg) => { // Console timestamp
-    console.log(`[WrightBot ${moment().format("MM-DD-YYYY HH:mm:ss")}] ${msg}`);
-};
+const Discord = require("discord.js");
+const bot = new Discord.Client();
+bot.cmds = new Map();
+bot.util = new Map();
 
-// My Scripts
-const DiscFunc = require(__dirname + "/../CommonScripts/DiscFunctions.js");
-const DBFunc = require(__dirname + "/../CommonScripts/DatabaseFunctions.js");
+// Load in all the commands
+const commandFiles = fs.readdirSync(__dirname + "/scripts/cmds")
+    .filter(file => file.endsWith(".js"));
+for (let file of commandFiles) {
+    let cmd = require(file);
+    bot.cmds.set(cmd.command, cmd);
+    if (cmd.aliases != null) { // Type safety? What's that? :^)
+        for (let alias of cmd.aliases) { // I love you pass by reference
+            bot.cmds.set(alias, bot.cmds.get(cmd.command)); 
+        }
+    }
+}
 
-const Help = require(__dirname + "/Scripts/Help.js");
-const ConfigScript = require(__dirname + "/Scripts/Config.js");
-const Gavel = require(__dirname + "/Scripts/Gavel.js");
-const Judge = require(__dirname + "/Scripts/Judge.js");
+// Load in utilities
+const utilityFiles = fs.readdirSync(__dirname + "/scripts/util")
+    .filter(file => file.endsWith(".js"));
+for (let file of utilityFiles) {
+    let util = require(file);
+    bot.util.set(util.name, util);
+}
 
-// Files
-var database = require(__dirname + "/database.json");
-var databaseBackup = require(__dirname + "/database-backup.json");
-
+/*
 // Misc. Functions
 function createDatabaseInfo(guild) { // Create new guild info in the database
     let guildInfo = {
@@ -43,30 +49,29 @@ function setStatus() {
     botStatus.game.type = "WATCHING";
     bot.user.setPresence(botStatus).catch(log); //Set status and send a message to the console once the bot is ready
 }
+*/
 
-// ============================================================================
+// =============================================================================
 
 // Stuff to run once bot is initially online
-var avlist = [ // List of file paths to avatar
-    'avatar1.png',
-    'avatar2.png',
-    'avatar3.png',
-    "avatar4.png",
-    "avatar5.png"
-]
-bot.on('ready', () => {
-    setStatus();
-    log(`Online in ${bot.channels.size} courtroom(s) and ${bot.guilds.size} courthouse(s).`);
-    // Pick avatar
-    if (config.devMode) return; 
-    var avatar = avlist[Math.floor(Math.random() * avlist.length)] // Pick a random one from the list
-    // Christmas avatar
-    var month = `${moment().format("MM")}`
-    if (month == "12") { avatar = "avatarxmas.png" } // Christmas avatar!
+bot.on("ready", () => {
+    // Set status
+    bot.user.setPresence({
+        status: "online",
+        activity: {
+            type: "WATCHING",
+            name: bot.guilds.size + " trials | " + defaultPrefix + "help";
+        }
+    }).catch(err => { console.log(err) });
+    
     // Set avatar
-    bot.user.setAvatar(DBFunc.read(__dirname + "/Avatars/" + avatar)).catch(err => {});
-    log('Current avatar: ' + avatar);
+        // TODO
+    
+    // Print to console
+    console.log(`Discord is ready!\nOnline in ${bot.channels.size} channel(s) and ${bot.guilds.size} server(s).`);
 });
+
+// =============================================================================
 
 // Stuff to run whenever a message is sent
 bot.on("message", function(message) {
@@ -75,48 +80,53 @@ bot.on("message", function(message) {
     if (config.devMode && message.author.id != "126516587258707969") return;
     
     // Passive stuff
+    /*
     if (!(database[message.guild.id])) {
         createDatabaseInfo(message.guild);
         DBFunc.writeData(__dirname + "/database.json", JSON.stringify(database,null,4));
     }
+    */
     
     // One-time vars
-    let prefix = database[message.guild.id].prefix;
-    let input = message.content.toUpperCase();
+    let prefix = "!" //database[message.guild.id].prefix;
     
-    // ========================================================================
+    // Command processing
+    processCommand(prefix, message);
+});
 
-    // help or cmds - Shows commands and info
-    if ((input == defaultPrefix + "HELP") || (input == defaultPrefix + "CMDS") || (input == prefix + "HELP") || (input == prefix + "CMDS")) {
-        Help.main(message);
-    }
-    
-    // config - Let server admins configure the bot
-    if (input.startsWith(prefix + "CONFIG")) {
-        database = ConfigScript.main(message,input,database,bot);
-        DBFunc.writeData(__dirname + "/database.json", JSON.stringify(database,null,4));
-    }
-    
-    // gavel - Gavel pound GIF
-    if (input.startsWith(prefix + "GAVEL")) {
-        switch(input) {
-            case prefix + "GAVEL 1":
-                Gavel.main(message,1);
-                break;
-            case prefix + "GAVEL 3":
-                Gavel.main(message,3);
-                break;
-            default:
-                Gavel.main(message,null,prefix);
+function processCommand(prefix, message) {
+    let input = message.content.toLowerCase();
+    for (let cmd in bot.cmds) {
+        // Match command
+        let prefixAndCmd = prefix + cmd;
+        if (input.substring(0, prefixAndCmd.length) == prefixAndCmd) {
+            if (canRunCommand(prefixAndCmd, input, bot.cmds.cmd)) {
+                bot.cmds.cmd.func(message);
+            }
         }
     }
-    
-    // judge - Judge someone guilty or not guilty
-    if (input.startsWith(prefix + "JUDGE")) {
-        Judge.main(message, prefix);
+}
+
+function canRunCommand(prefixAndCmd, input, cmdObj) {
+    return argsCheck(prefixAndCmd, input, cmdObj);
+    // maybe I can put more stuff here later idk
+}
+
+function argsCheck(prefixAndCmd, input, cmdObj) {
+    if (cmdObj.hasArgs) { // If this command is expecting arguments
+        if (input.length == prefixAndCmd.length) { 
+            return true; // If the message only contains the command, run command
+        }
+        if (input.substring(prefixAndCmd.length + 1) == prefixAndCmd + " ") {
+            return true; // If whitespace separates the command and the first argument, run command
+        }
+        return false;
+    } else { // If this comand is NOT expecting args
+        return (input.length == prefixAndCmd.length); // run command iff input matches the command
     }
-    
-});
+}
+
+// =============================================================================
 
 // Login to Discord
 if (config.devMode) bot.login(config.authDev);
