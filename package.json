@@ -1,7 +1,7 @@
 {
     "version": "2.0.0",
     "name": "wrightbot",
-    "description": "An Ace Attorney-themed Discord bot"
+    "description": "An Ace Attorney-themed Discord bot",
     "author": {
         "name": "James Hyun",
         "url": "https://www.1230james.xyz"
@@ -9,11 +9,11 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/1230james/WrightBot.git"
-    }
+    },
     "main": "botscript.js",
     "private": true,
     "dependencies": {
         "discord.js": "^12.0.0"
-    }
+    },
     "bugs": "https://github.com/1230james/WrightBot/issues"
 }
