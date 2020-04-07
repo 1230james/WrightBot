@@ -3,6 +3,7 @@
 
 // Libraries & Important Variables
 const config = require("./config.json");
+const fs = require("fs");
 
 const Discord = require("discord.js");
 const bot = new Discord.Client();
@@ -13,8 +14,9 @@ bot.util = new Map();
 const commandFiles = fs.readdirSync(__dirname + "/scripts/cmds")
     .filter(file => file.endsWith(".js"));
 for (let file of commandFiles) {
-    let cmd = require(file);
+    let cmd = require(__dirname + "/scripts/cmds/" + file);
     bot.cmds.set(cmd.command, cmd);
+    
     if (cmd.aliases != null) { // Type safety? What's that? :^)
         for (let alias of cmd.aliases) { // I love you pass by reference
             bot.cmds.set(alias, bot.cmds.get(cmd.command)); 
@@ -26,7 +28,7 @@ for (let file of commandFiles) {
 const utilityFiles = fs.readdirSync(__dirname + "/scripts/util")
     .filter(file => file.endsWith(".js"));
 for (let file of utilityFiles) {
-    let util = require(file);
+    let util = require(__dirname + "/scripts/util/" + file);
     bot.util.set(util.name, util);
 }
 
@@ -60,7 +62,7 @@ bot.on("ready", () => {
         status: "online",
         activity: {
             type: "WATCHING",
-            name: bot.guilds.size + " trials | " + defaultPrefix + "help";
+            name: bot.guilds.cache.size + " trials | " + "w!help" // defaultPrefix + "help"
         }
     }).catch(err => { console.log(err) });
     
@@ -68,7 +70,7 @@ bot.on("ready", () => {
         // TODO
     
     // Print to console
-    console.log(`Discord is ready!\nOnline in ${bot.channels.size} channel(s) and ${bot.guilds.size} server(s).`);
+    console.log(`Discord is ready!\nOnline in ${bot.channels.cache.size} channel(s) and ${bot.guilds.cache.size} server(s).`);
 });
 
 // =============================================================================
@@ -88,7 +90,7 @@ bot.on("message", function(message) {
     */
     
     // One-time vars
-    let prefix = "!" //database[message.guild.id].prefix;
+    let prefix = "w!" //database[message.guild.id].prefix;
     
     // Command processing
     processCommand(prefix, message);
@@ -96,15 +98,16 @@ bot.on("message", function(message) {
 
 function processCommand(prefix, message) {
     let input = message.content.toLowerCase();
-    for (let cmd in bot.cmds) {
+    
+    bot.cmds.forEach(function(cmdObj, cmd) {
         // Match command
         let prefixAndCmd = prefix + cmd;
         if (input.substring(0, prefixAndCmd.length) == prefixAndCmd) {
-            if (canRunCommand(prefixAndCmd, input, bot.cmds.cmd)) {
-                bot.cmds.cmd.func(message);
+            if (canRunCommand(prefixAndCmd, input, cmdObj)) {
+                cmdObj.func(message);
             }
         }
-    }
+    });
 }
 
 function canRunCommand(prefixAndCmd, input, cmdObj) {
@@ -117,7 +120,7 @@ function argsCheck(prefixAndCmd, input, cmdObj) {
         if (input.length == prefixAndCmd.length) { 
             return true; // If the message only contains the command, run command
         }
-        if (input.substring(prefixAndCmd.length + 1) == prefixAndCmd + " ") {
+        if (input.substring(0, prefixAndCmd.length + 1) == prefixAndCmd + " ") {
             return true; // If whitespace separates the command and the first argument, run command
         }
         return false;

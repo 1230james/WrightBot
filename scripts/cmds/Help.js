@@ -9,7 +9,7 @@ const log = require(__dirname + "/../util/Log.js");
 module.exports = {
     command: "help",
     hasArgs: false,
-    func = function(message) {
+    func: function(message) {
         let cmds = `__**WrightBot v18**__
 • bing bong we still working on it
 
@@ -37,7 +37,8 @@ Need some help? Come on down to JSJ; we have a section reserved for anything rel
 https://discord.gg/MvEHdmc`
 
         if (message.channel.type != 'dm') {
-            message.channel.send(message.author + ', I sent a copy of the Court Record to you in a DM.');
+            message.channel.send("<@" + message.author.id + ">, I sent a copy of the Court Record to you in a DM.");
+            // For some reason message.author doesn't parse into a mention? I think it's a bug based on the discord.js docs
         }
         message.author.send(cmds);
         message.author.send(invite);

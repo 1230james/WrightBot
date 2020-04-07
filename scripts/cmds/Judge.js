@@ -8,7 +8,7 @@ const log = require(__dirname + "/../util/Log.js");
 module.exports = {
     command: "judge",
     hasArgs: true,
-    func = function(message) {
+    func: function(message) {
         let str = "";
         let verdict = (Math.random() < .5 && "guilty") || "not guilty";
         
