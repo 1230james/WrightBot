@@ -2,7 +2,6 @@
 "use strict";
 
 const log = require(__dirname + "/../util/Log.js");
-const Discord = require("discord.js");
 
 // ============================================================================
 
@@ -20,7 +19,6 @@ module.exports = {
         let input = message.content.toLowerCase();
         let prefix = input.substring(0, input.indexOf("gavel"));
         let arg = input.substring(input.indexOf(" ") + 1);
-        console.log("arg: " + arg);
         switch(arg) {
             case "1":
                 pounds = 1;
@@ -35,11 +33,11 @@ module.exports = {
         // Respond
         switch(pounds) {
             case 1:
-                message.channel.send(makeAPIMessage(gavel1Url));
+                message.channel.send("",{files: [gavel1Url]});
                 log(message, "Pounded gavel once");
                 break;
             case 3:
-                message.channel.send(makeAPIMessage(gavel3Url));
+                message.channel.send("",{files: [gavel3Url]});
                 log(message, "Pounded gavel thrice");
                 break;
             default:
@@ -48,12 +46,4 @@ module.exports = {
                 log(message, "Failed to pound gavel");
         }
     }
-}
-
-function makeAPIMessage(fileUrl) {
-    return new Discord.APIMessage(message.channel, {
-        files: [{
-            attachment: fileUrl
-        }]
-    });
 }

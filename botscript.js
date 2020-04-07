@@ -98,7 +98,6 @@ bot.on("message", function(message) {
 
 function processCommand(prefix, message) {
     let input = message.content.toLowerCase();
-    
     bot.cmds.forEach(function(cmdObj, cmd) {
         // Match command
         let prefixAndCmd = prefix + cmd;
