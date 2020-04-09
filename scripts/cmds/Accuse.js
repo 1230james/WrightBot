@@ -2,7 +2,7 @@
 "use strict";
 
 // Libraries
-const log = require(__dirname + "/../util/Log.js");
+const log = require(__dirname + "/../util/Log.js").func;
 
 // ============================================================================
 

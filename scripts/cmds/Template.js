@@ -3,7 +3,7 @@
 
 // Libraries
 // Require stuff needed for the execution of this command here
-const log = require(__dirname + "/../util/Log.js");
+const log = require(__dirname + "/../util/Log.js").func;
 
 // ============================================================================
 

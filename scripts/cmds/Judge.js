@@ -1,7 +1,7 @@
 // Judge / RNG Verdict
 "use strict";
 
-const log = require(__dirname + "/../util/Log.js");
+const log = require(__dirname + "/../util/Log.js").func;
 
 // ============================================================================
 
