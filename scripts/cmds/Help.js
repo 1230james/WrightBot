@@ -1,4 +1,4 @@
-// awodhakjwd
+// Help/Commands list
 "use strict";
 
 // Libraries
